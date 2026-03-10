@@ -641,6 +641,56 @@
     .ci-icon { width:36px; height:36px; border-radius:50%; background:rgba(232,25,60,.1); border:1px solid rgba(232,25,60,.18); display:flex; align-items:center; justify-content:center; color:var(--red); flex-shrink:0; }
     .ci-text { font-size:.9375rem; color:var(--body); }
 
+    /* ─── MAKE IT SEEN — Tagline placements ─── */
+    .hero__mis {
+      font-family:'Syne',sans-serif; font-weight:700;
+      font-size:clamp(12px,1vw,14px); letter-spacing:.24em;
+      text-transform:uppercase; color:var(--red);
+      display:flex; align-items:center; gap:14px;
+      margin-bottom:24px;
+    }
+    .hero__mis::before { content:''; width:36px; height:1px; background:rgba(232,25,60,.5); }
+    .mis-strip {
+      padding:16px 0; overflow:hidden;
+      border-top:1px solid rgba(232,25,60,.1);
+      border-bottom:1px solid rgba(232,25,60,.1);
+      background:rgba(232,25,60,.025);
+    }
+    .mis-strip__track {
+      display:flex; white-space:nowrap;
+      animation:misSroll 28s linear infinite;
+    }
+    .mis-strip__item {
+      font-family:'Syne',sans-serif; font-weight:800;
+      font-size:clamp(10px,.8vw,12px); letter-spacing:.3em;
+      text-transform:uppercase; color:var(--red); opacity:.5;
+      padding:0 clamp(24px,3.5vw,48px); flex-shrink:0;
+      display:inline-flex; align-items:center; gap:clamp(24px,3.5vw,48px);
+    }
+    .mis-strip__item::after { content:'✦'; opacity:.5; font-size:.7em; }
+    @keyframes misSroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    .about__mis {
+      display:flex; align-items:center; justify-content:center; gap:20px;
+      font-family:'Syne',sans-serif; font-weight:700;
+      font-size:clamp(11px,.85vw,13px); letter-spacing:.26em;
+      text-transform:uppercase; color:var(--red); opacity:.6;
+      margin-top:clamp(28px,4vw,48px);
+    }
+    .about__mis::before, .about__mis::after { content:''; height:1px; width:clamp(28px,5vw,72px); background:rgba(232,25,60,.3); }
+    .cta__mis {
+      font-family:'Syne',sans-serif; font-weight:800;
+      font-size:clamp(52px,8.5vw,112px); line-height:.92; letter-spacing:-.025em;
+      color:#fff; margin-bottom:14px;
+    }
+    .cta__mis .accent { color:var(--red); }
+    .contact-mis {
+      font-family:'Syne',sans-serif; font-weight:700;
+      font-size:clamp(11px,.85vw,13px); letter-spacing:.22em;
+      text-transform:uppercase; color:var(--red); opacity:.6;
+      display:flex; align-items:center; gap:12px; margin-top:8px;
+    }
+    .contact-mis::before { content:''; width:28px; height:1px; background:rgba(232,25,60,.4); }
+
     /* ─── RESPONSIVE ADDITIONS ─── */
     @media (max-width:1024px) {
       .principles__grid { grid-template-columns:repeat(2,1fr); }
@@ -711,6 +761,7 @@
   <div class="container">
     <div class="hero__content">
       <div class="hero__pill" data-reveal>Bold. Strategic. Design.</div>
+      <p class="hero__mis" data-reveal>Make It Seen.</p>
       <h1 class="hero__h1" data-reveal>
         <span class="light">Transforming your Brand with</span><br>Bold, Strategic Design
       </h1>
@@ -822,6 +873,7 @@
     <!-- Brand Personality -->
     <div class="about__personality" data-reveal>
       <h3>Our Brand Personality: Bold. Strategic. <span class="accent">Unforgettable.</span></h3>
+      <div class="about__mis" data-reveal>Make It Seen.</div>
     </div>
 
     <!-- Strategic Results -->
@@ -1042,6 +1094,28 @@
     </div>
   </div>
 </section>
+
+<!-- ═══════════════════════════ MIS STRIP ═══════════════════════════ -->
+<div class="mis-strip" aria-hidden="true">
+  <div class="mis-strip__track">
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+    <span class="mis-strip__item">Make It Seen</span>
+  </div>
+</div>
 
 <!-- ═══════════════════════════ STATS ═══════════════════════════ -->
 <section class="stats" aria-label="Key statistics">
@@ -1285,6 +1359,7 @@
   <div class="container">
     <div class="cta__inner" data-reveal>
       <p class="eyebrow" style="justify-content:center;margin-bottom:20px">Let's Connect</p>
+      <p class="cta__mis">Make It<br><span class="accent">Seen.</span></p>
       <h2 class="cta__h2">Start Your <span class="accent">Design Journey</span></h2>
       <p class="cta__sub">We're ready to create something remarkable with you. Whether you need a complete brand overhaul or a targeted campaign — the work starts with a conversation.</p>
       <div class="cta__btns">
@@ -1301,6 +1376,7 @@
     <div class="sec-head" data-reveal>
       <p class="eyebrow">Get In Touch</p>
       <h2 class="h-display">Let's <span class="accent">Start</span></h2>
+      <p class="contact-mis" data-reveal>Make It Seen.</p>
     </div>
     <div class="contact-sec__grid">
 
