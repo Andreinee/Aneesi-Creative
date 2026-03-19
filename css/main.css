@@ -868,3 +868,68 @@
       font-size:clamp(15px,1.4vw,18px); line-height:1.75; color:var(--body);
       max-width:540px; margin-top:16px;
     }
+
+    /* ─── CUSTOM CURSOR ─── */
+    .cursor-dot,
+    .cursor-ring {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      will-change: left, top;
+    }
+    .cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--red);
+      transition: transform .15s ease, opacity .3s;
+    }
+    .cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(232,25,60,.5);
+      transition: width .35s cubic-bezier(.16,1,.3,1),
+                  height .35s cubic-bezier(.16,1,.3,1),
+                  border-color .25s,
+                  background .25s;
+    }
+    .cursor-dot.cursor--hover  { transform: translate(-50%,-50%) scale(0); }
+    .cursor-ring.cursor--hover {
+      width: 54px;
+      height: 54px;
+      border-color: rgba(232,25,60,.9);
+      background: rgba(232,25,60,.07);
+    }
+    .cursor-ring.cursor--click {
+      width: 24px;
+      height: 24px;
+      background: rgba(232,25,60,.2);
+    }
+    @media (pointer: coarse) { .cursor-dot, .cursor-ring, .cursor-spotlight { display: none; } }
+    body.cursor-ready        { cursor: none; }
+    body.cursor-ready a,
+    body.cursor-ready button,
+    body.cursor-ready [role="button"],
+    body.cursor-ready label  { cursor: none; }
+
+    /* ─── GLOBAL SPOTLIGHT ─── */
+    .cursor-spotlight {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,25,60,.04) 0%, transparent 65%);
+      transform: translate(-50%, -50%);
+      will-change: left, top;
+      mix-blend-mode: screen;
+    }
+
+    /* ─── HERO PARALLAX ─── */
+    .hero__wm,
+    .hero__glow-a,
+    .hero__glow-b {
+      transition: transform .9s cubic-bezier(.16,1,.3,1);
+    }

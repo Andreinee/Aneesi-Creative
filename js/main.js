@@ -204,3 +204,134 @@
       window.scrollTo({ top: t.offsetTop - navH, behavior: 'smooth' });
     });
   });
+
+  /* ── Custom cursor ── */
+  (function () {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const dot  = document.createElement('div');
+    const ring = document.createElement('div');
+    dot.className  = 'cursor-dot';
+    ring.className = 'cursor-ring';
+    document.body.append(dot, ring);
+
+    let mx = -200, my = -200;
+    let rx = -200, ry = -200;
+    let rafPending = false;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      dot.style.left = mx + 'px';
+      dot.style.top  = my + 'px';
+      if (!rafPending) { rafPending = true; requestAnimationFrame(tick); }
+    }, { passive: true });
+
+    function tick() {
+      rafPending = false;
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      if (Math.abs(mx - rx) > 0.3 || Math.abs(my - ry) > 0.3) {
+        rafPending = true;
+        requestAnimationFrame(tick);
+      }
+    }
+
+    /* Hover state */
+    const hoverables = 'a, button, .btn, [role="button"], label, input, textarea, select';
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest(hoverables)) {
+        dot.classList.add('cursor--hover');
+        ring.classList.add('cursor--hover');
+      }
+    });
+    document.addEventListener('mouseout', e => {
+      if (e.target.closest(hoverables)) {
+        dot.classList.remove('cursor--hover');
+        ring.classList.remove('cursor--hover');
+      }
+    });
+
+    document.addEventListener('mousedown', () => ring.classList.add('cursor--click'));
+    document.addEventListener('mouseup',   () => ring.classList.remove('cursor--click'));
+
+    /* Hide cursor when it leaves the window */
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+
+    document.body.classList.add('cursor-ready');
+  })();
+
+  /* ── Global spotlight glow ── */
+  (function () {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const spot = document.createElement('div');
+    spot.className = 'cursor-spotlight';
+    document.body.appendChild(spot);
+
+    let sx = -400, sy = -400;
+    let tx = -400, ty = -400;
+
+    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+
+    (function animSpot() {
+      sx += (tx - sx) * 0.06;
+      sy += (ty - sy) * 0.06;
+      spot.style.left = sx + 'px';
+      spot.style.top  = sy + 'px';
+      requestAnimationFrame(animSpot);
+    })();
+  })();
+
+  /* ── Magnetic large CTA buttons ── */
+  (function () {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    document.querySelectorAll('.btn-lg').forEach(btn => {
+      const STRENGTH = 0.32;
+
+      btn.addEventListener('mousemove', e => {
+        const r  = btn.getBoundingClientRect();
+        const cx = r.left + r.width  / 2;
+        const cy = r.top  + r.height / 2;
+        const dx = (e.clientX - cx) * STRENGTH;
+        const dy = (e.clientY - cy) * STRENGTH;
+        btn.style.transition = 'transform .15s ease, box-shadow .25s ease';
+        btn.style.transform  = `translate(${dx}px, ${dy - 2}px)`;
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transition = 'transform .55s cubic-bezier(.16,1,.3,1), box-shadow .25s ease';
+        btn.style.transform  = '';
+      });
+    });
+  })();
+
+  /* ── Hero parallax on mouse ── */
+  (function () {
+    const hero = document.getElementById('home');
+    if (!hero) return;
+
+    const wm  = hero.querySelector('.hero__wm');
+    const glA = hero.querySelector('.hero__glow-a');
+    const glB = hero.querySelector('.hero__glow-b');
+
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left  - r.width  / 2) / r.width;
+      const y = (e.clientY - r.top   - r.height / 2) / r.height;
+
+      if (wm)  wm.style.transform  = `translate(${x * -32}px, ${y * -20}px)`;
+      if (glA) glA.style.transform = `translate(${x *  24}px, ${y *  16}px)`;
+      if (glB) glB.style.transform = `translate(${x * -20}px, ${y *  24}px)`;
+    }, { passive: true });
+
+    hero.addEventListener('mouseleave', () => {
+      if (wm)  wm.style.transform  = '';
+      if (glA) glA.style.transform = '';
+      if (glB) glB.style.transform = '';
+    });
+  })();
