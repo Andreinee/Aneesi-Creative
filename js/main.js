@@ -156,6 +156,13 @@
       renderer.render(scene, camera);
     });
 
+    /* Scroll parallax — shape drifts and fades as page scrolls */
+    window.addEventListener('scroll', () => {
+      const progress = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      canvas.style.transform = `translateY(calc(-50% + ${progress * 120}px))`;
+      canvas.style.opacity   = Math.max(0.08, 0.55 - progress * 0.45);
+    }, { passive: true });
+
     /* Resize */
     window.addEventListener('resize', () => {
       renderer.setSize(W(), H(), false);
@@ -419,3 +426,218 @@
       if (glB) glB.style.transform = '';
     });
   })();
+
+/* ═══════════════════════════════════════════════════════
+   CHATBOT
+   ═══════════════════════════════════════════════════════ */
+(function () {
+
+  /* ── Knowledge base ── */
+  const KB = [
+    {
+      keys: ['hello','hi','hey','good morning','good afternoon','good evening','howdy'],
+      reply: "Hey there! Welcome to Aneesi Creative. I'm here to help with any questions about our services, process, or projects. What can I do for you?"
+    },
+    {
+      keys: ['service','offer','do you','what can','help with','speciali'],
+      reply: "We offer five core creative services:\n\n• **Brand Identity & Strategy** — naming, positioning, visual systems\n• **Website & Digital Design** — UX, UI, and web experiences\n• **Campaign & Content** — integrated creative campaigns\n• **Packaging & Print** — tactile, shelf-stopping design\n• **UI/UX & Product Design** — user-centred digital products\n\nWhich area are you most interested in?"
+    },
+    {
+      keys: ['price','cost','rate','budget','how much','pricing','quote','package'],
+      reply: "Every project is scoped to fit your goals and budget — we don't do one-size-fits-all pricing. We offer flexible packages whether you're a startup or an established brand.\n\nThe best next step is a quick discovery call where we can give you an accurate quote. Ready to start? → hello@aneesicreative.com"
+    },
+    {
+      keys: ['contact','email','reach','get in touch','talk','speak','call','meet'],
+      reply: "You can reach us at **hello@aneesicreative.com** or fill out the contact form on this page.\n\nWe typically respond within one business day. If you have an urgent brief, mention it in your message and we'll prioritise."
+    },
+    {
+      keys: ['process','how do you work','workflow','steps','stage','approach','methodology'],
+      reply: "Our process has seven stages:\n\n1. **Discovery** — understanding your brand and goals\n2. **Strategy** — positioning and creative direction\n3. **Concept** — initial creative directions\n4. **Design** — visual development and iteration\n5. **Craft** — final production and delivery\n6. **Launch** — deployment and handover\n7. **Evolve** — ongoing retainer support\n\nWant to know more about any specific stage?"
+    },
+    {
+      keys: ['timeline','long','time','deadline','turnaround','fast','quick','urgent','when'],
+      reply: "Project timelines vary by scope:\n\n• **Brand identity** — 3–6 weeks\n• **Website design** — 4–8 weeks\n• **Campaign** — 2–4 weeks\n• **Packaging** — 2–5 weeks\n\nWe can also accommodate urgent briefs — just let us know your deadline when you get in touch."
+    },
+    {
+      keys: ['startup','new business','launch','entrepreneur','early stage','founder'],
+      reply: "We love working with startups and founders. We offer pitch-ready design, brand identities built to scale, and flexible packages designed for growth-stage budgets.\n\nBuilding something new? Let's make it impossible to ignore."
+    },
+    {
+      keys: ['portfolio','work','project','case study','example','previous','past','sample'],
+      reply: "Our portfolio spans brand identity, web design, campaigns, packaging, and UI/UX across 8+ industries. You can browse selected work right here on our Work page.\n\nWant to see work relevant to your specific industry? Drop us an email at hello@aneesicreative.com."
+    },
+    {
+      keys: ['location','based','where','country','city','remote','local','africa','ghana','nigeria','kenya','uk','usa'],
+      reply: "We're a global creative studio working across 3 continents — with clients in Africa, Europe, and North America. We work remotely, collaborating seamlessly wherever you are in the world."
+    },
+    {
+      keys: ['team','who','people','size','designer','staff'],
+      reply: "Aneesi Creative is a focused studio of senior creatives — not a factory. Every project gets hands-on senior attention, not passed down to a junior. We bring in specialist partners when a project calls for it."
+    },
+    {
+      keys: ['industry','sector','niche','type of client','who do you'],
+      reply: "We've worked across 8+ industries including fintech, wellness, food & beverage, fashion, healthcare, tech, hospitality, and education. Bold design that works doesn't belong to just one sector."
+    },
+    {
+      keys: ['retainer','ongoing','monthly','support','maintain','long term'],
+      reply: "Yes — we offer ongoing retainer support for brands that need regular design, content, or campaign work. This gives you a dedicated creative partner without the overhead of an in-house team."
+    },
+    {
+      keys: ['agency','white label','partner','overflow','outsource','subcontract'],
+      reply: "We work with agencies too — offering white-label design support for overflow capacity, all under NDA. Reliable, brief-responsive, and built around your timelines."
+    },
+    {
+      keys: ['thank','thanks','appreciate','great','perfect','awesome','brilliant','love it'],
+      reply: "Always a pleasure. If there's anything else you need — briefs, quotes, or just a creative chat — we're here. Make it seen."
+    },
+    {
+      keys: ['bye','goodbye','see you','later','take care','ciao'],
+      reply: "Thanks for stopping by. When you're ready to make something remarkable, you know where to find us. — Aneesi Creative"
+    }
+  ];
+
+  const FALLBACKS = [
+    "That's a great question — the best person to answer it is our team directly. Reach us at hello@aneesicreative.com and we'll come back to you fast.",
+    "I want to make sure you get the right answer on that. Send us a message at hello@aneesicreative.com and we'll give you a proper response.",
+    "Good question. For anything specific like that, I'd recommend getting in touch directly — hello@aneesicreative.com. We're quick to respond."
+  ];
+
+  let fallbackIdx = 0;
+
+  function getReply(input) {
+    const lower = input.toLowerCase();
+    for (const entry of KB) {
+      if (entry.keys.some(k => lower.includes(k))) return entry.reply;
+    }
+    const reply = FALLBACKS[fallbackIdx % FALLBACKS.length];
+    fallbackIdx++;
+    return reply;
+  }
+
+  /* ── Build DOM ── */
+  const SUGS = ['Our services', 'Pricing & quotes', 'How you work', 'See our work', 'Get in touch'];
+
+  const bubble = document.createElement('button');
+  bubble.className = 'chat-bubble';
+  bubble.setAttribute('aria-label', 'Open chat');
+  bubble.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+
+  const notify = document.createElement('span');
+  notify.className = 'chat-notify';
+  notify.textContent = '1';
+  bubble.appendChild(notify);
+
+  const win = document.createElement('div');
+  win.className = 'chat-window';
+  win.setAttribute('aria-live', 'polite');
+  win.innerHTML = `
+    <div class="chat-head">
+      <div class="chat-head-info">
+        <span class="chat-status-dot"></span>
+        <div>
+          <p class="chat-head-name">Aneesi Creative</p>
+          <p class="chat-head-sub">Typically replies in minutes</p>
+        </div>
+      </div>
+      <button class="chat-close" aria-label="Close chat">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-sugs" id="chatSugs"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Ask us anything\u2026" autocomplete="off" />
+      <button class="chat-send-btn" id="chatSend" aria-label="Send message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>`;
+
+  document.body.appendChild(bubble);
+  document.body.appendChild(win);
+
+  const msgs    = document.getElementById('chatMsgs');
+  const sugsEl  = document.getElementById('chatSugs');
+  const inputEl = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSend');
+  const closeBtn = win.querySelector('.chat-close');
+
+  /* ── Helpers ── */
+  function addMsg(text, who) {
+    const typing = msgs.querySelector('.chat-typing');
+    if (typing) typing.remove();
+
+    const el = document.createElement('div');
+    el.className = 'chat-msg chat-msg--' + who;
+    el.innerHTML = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    msgs.appendChild(el);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'chat-typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(el);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function botReply(text) {
+    showTyping();
+    setTimeout(() => addMsg(text, 'bot'), 900 + Math.random() * 400);
+  }
+
+  function buildSugs(list) {
+    sugsEl.innerHTML = '';
+    list.forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'chat-sug';
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        addMsg(label, 'user');
+        sugsEl.innerHTML = '';
+        botReply(getReply(label));
+      });
+      sugsEl.appendChild(btn);
+    });
+  }
+
+  function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    inputEl.value = '';
+    sugsEl.innerHTML = '';
+    addMsg(text, 'user');
+    botReply(getReply(text));
+  }
+
+  /* ── Open / close ── */
+  let isOpen = false;
+
+  function openChat() {
+    isOpen = true;
+    win.classList.add('open');
+    bubble.classList.add('active');
+    notify.style.display = 'none';
+    inputEl.focus();
+  }
+
+  function closeChat() {
+    isOpen = false;
+    win.classList.remove('open');
+    bubble.classList.remove('active');
+  }
+
+  bubble.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+  /* ── Initial greeting ── */
+  setTimeout(() => {
+    botReply("Hey! Welcome to Aneesi Creative. Looking to start a project, or just want to learn more about what we do?");
+    setTimeout(() => buildSugs(SUGS), 1400);
+  }, 1200);
+
+})();
