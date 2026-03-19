@@ -467,8 +467,8 @@
       reply: "Our portfolio spans brand identity, web design, campaigns, packaging, and UI/UX across 8+ industries. You can browse selected work right here on our Work page.\n\nWant to see work relevant to your specific industry? Drop us an email at hello@aneesicreative.com."
     },
     {
-      keys: ['location','based','where','country','city','remote','local','africa','ghana','nigeria','kenya','uk','usa'],
-      reply: "We're a global creative studio working across 3 continents — with clients in Africa, Europe, and North America. We work remotely, collaborating seamlessly wherever you are in the world."
+      keys: ['location','based','where','country','city','remote','local','texas','usa','united states'],
+      reply: "We're based in Texas, United States. We work with clients locally and across the globe — our workflow is built for seamless remote collaboration wherever you are."
     },
     {
       keys: ['team','who','people','size','designer','staff'],
