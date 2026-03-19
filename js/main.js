@@ -428,91 +428,12 @@
   })();
 
 /* ═══════════════════════════════════════════════════════
-   CHATBOT
+   AI CHATBOT — powered by Claude (api/chat.js)
    ═══════════════════════════════════════════════════════ */
 (function () {
 
-  /* ── Knowledge base ── */
-  const KB = [
-    {
-      keys: ['hello','hi','hey','good morning','good afternoon','good evening','howdy'],
-      reply: "Hey there! Welcome to Aneesi Creative. I'm here to help with any questions about our services, process, or projects. What can I do for you?"
-    },
-    {
-      keys: ['service','offer','do you','what can','help with','speciali'],
-      reply: "We offer five core creative services:\n\n• **Brand Identity & Strategy** — naming, positioning, visual systems\n• **Website & Digital Design** — UX, UI, and web experiences\n• **Campaign & Content** — integrated creative campaigns\n• **Packaging & Print** — tactile, shelf-stopping design\n• **UI/UX & Product Design** — user-centred digital products\n\nWhich area are you most interested in?"
-    },
-    {
-      keys: ['price','cost','rate','budget','how much','pricing','quote','package'],
-      reply: "Every project is scoped to fit your goals and budget — we don't do one-size-fits-all pricing. We offer flexible packages whether you're a startup or an established brand.\n\nThe best next step is a quick discovery call where we can give you an accurate quote. Ready to start? → hello@aneesicreative.com"
-    },
-    {
-      keys: ['contact','email','reach','get in touch','talk','speak','call','meet'],
-      reply: "You can reach us at **hello@aneesicreative.com** or fill out the contact form on this page.\n\nWe typically respond within one business day. If you have an urgent brief, mention it in your message and we'll prioritise."
-    },
-    {
-      keys: ['process','how do you work','workflow','steps','stage','approach','methodology'],
-      reply: "Our process has seven stages:\n\n1. **Discovery** — understanding your brand and goals\n2. **Strategy** — positioning and creative direction\n3. **Concept** — initial creative directions\n4. **Design** — visual development and iteration\n5. **Craft** — final production and delivery\n6. **Launch** — deployment and handover\n7. **Evolve** — ongoing retainer support\n\nWant to know more about any specific stage?"
-    },
-    {
-      keys: ['timeline','long','time','deadline','turnaround','fast','quick','urgent','when'],
-      reply: "Project timelines vary by scope:\n\n• **Brand identity** — 3–6 weeks\n• **Website design** — 4–8 weeks\n• **Campaign** — 2–4 weeks\n• **Packaging** — 2–5 weeks\n\nWe can also accommodate urgent briefs — just let us know your deadline when you get in touch."
-    },
-    {
-      keys: ['startup','new business','launch','entrepreneur','early stage','founder'],
-      reply: "We love working with startups and founders. We offer pitch-ready design, brand identities built to scale, and flexible packages designed for growth-stage budgets.\n\nBuilding something new? Let's make it impossible to ignore."
-    },
-    {
-      keys: ['portfolio','work','project','case study','example','previous','past','sample'],
-      reply: "Our portfolio spans brand identity, web design, campaigns, packaging, and UI/UX across 8+ industries. You can browse selected work right here on our Work page.\n\nWant to see work relevant to your specific industry? Drop us an email at hello@aneesicreative.com."
-    },
-    {
-      keys: ['location','based','where','country','city','remote','local','texas','usa','united states'],
-      reply: "We're based in Texas, United States. We work with clients locally and across the globe — our workflow is built for seamless remote collaboration wherever you are."
-    },
-    {
-      keys: ['team','who','people','size','designer','staff'],
-      reply: "Aneesi Creative is a focused studio of senior creatives — not a factory. Every project gets hands-on senior attention, not passed down to a junior. We bring in specialist partners when a project calls for it."
-    },
-    {
-      keys: ['industry','sector','niche','type of client','who do you'],
-      reply: "We've worked across 8+ industries including fintech, wellness, food & beverage, fashion, healthcare, tech, hospitality, and education. Bold design that works doesn't belong to just one sector."
-    },
-    {
-      keys: ['retainer','ongoing','monthly','support','maintain','long term'],
-      reply: "Yes — we offer ongoing retainer support for brands that need regular design, content, or campaign work. This gives you a dedicated creative partner without the overhead of an in-house team."
-    },
-    {
-      keys: ['agency','white label','partner','overflow','outsource','subcontract'],
-      reply: "We work with agencies too — offering white-label design support for overflow capacity, all under NDA. Reliable, brief-responsive, and built around your timelines."
-    },
-    {
-      keys: ['thank','thanks','appreciate','great','perfect','awesome','brilliant','love it'],
-      reply: "Always a pleasure. If there's anything else you need — briefs, quotes, or just a creative chat — we're here. Make it seen."
-    },
-    {
-      keys: ['bye','goodbye','see you','later','take care','ciao'],
-      reply: "Thanks for stopping by. When you're ready to make something remarkable, you know where to find us. — Aneesi Creative"
-    }
-  ];
-
-  const FALLBACKS = [
-    "That's a great question — the best person to answer it is our team directly. Reach us at hello@aneesicreative.com and we'll come back to you fast.",
-    "I want to make sure you get the right answer on that. Send us a message at hello@aneesicreative.com and we'll give you a proper response.",
-    "Good question. For anything specific like that, I'd recommend getting in touch directly — hello@aneesicreative.com. We're quick to respond."
-  ];
-
-  let fallbackIdx = 0;
-
-  function getReply(input) {
-    const lower = input.toLowerCase();
-    for (const entry of KB) {
-      if (entry.keys.some(k => lower.includes(k))) return entry.reply;
-    }
-    const reply = FALLBACKS[fallbackIdx % FALLBACKS.length];
-    fallbackIdx++;
-    return reply;
-  }
+  /* ── Conversation history (sent to API) ── */
+  const history = [];
 
   /* ── Build DOM ── */
   const SUGS = ['Our services', 'Pricing & quotes', 'How you work', 'See our work', 'Get in touch'];
@@ -536,7 +457,7 @@
         <span class="chat-status-dot"></span>
         <div>
           <p class="chat-head-name">Aneesi Creative</p>
-          <p class="chat-head-sub">Typically replies in minutes</p>
+          <p class="chat-head-sub">AI assistant — always online</p>
         </div>
       </div>
       <button class="chat-close" aria-label="Close chat">
@@ -573,6 +494,7 @@
       .replace(/\n/g, '<br>');
     msgs.appendChild(el);
     msgs.scrollTop = msgs.scrollHeight;
+    return el;
   }
 
   function showTyping() {
@@ -581,11 +503,6 @@
     el.innerHTML = '<span></span><span></span><span></span>';
     msgs.appendChild(el);
     msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  function botReply(text) {
-    showTyping();
-    setTimeout(() => addMsg(text, 'bot'), 900 + Math.random() * 400);
   }
 
   function buildSugs(list) {
@@ -597,19 +514,57 @@
       btn.addEventListener('click', () => {
         addMsg(label, 'user');
         sugsEl.innerHTML = '';
-        botReply(getReply(label));
+        sendToAI(label);
       });
       sugsEl.appendChild(btn);
     });
   }
 
+  /* ── AI call ── */
+  let isBusy = false;
+
+  async function sendToAI(userText) {
+    if (isBusy) return;
+    isBusy = true;
+    inputEl.disabled = true;
+    sendBtn.disabled = true;
+
+    history.push({ role: 'user', content: userText });
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        const errMsg = data.error || 'Something went wrong. Try emailing hello@aneesicreative.com';
+        addMsg(errMsg, 'bot');
+      } else {
+        addMsg(data.reply, 'bot');
+        history.push({ role: 'assistant', content: data.reply });
+      }
+    } catch (_) {
+      addMsg("Connection issue — please email us directly at hello@aneesicreative.com", 'bot');
+    }
+
+    isBusy = false;
+    inputEl.disabled = false;
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+
   function sendMessage() {
     const text = inputEl.value.trim();
-    if (!text) return;
+    if (!text || isBusy) return;
     inputEl.value = '';
     sugsEl.innerHTML = '';
     addMsg(text, 'user');
-    botReply(getReply(text));
+    sendToAI(text);
   }
 
   /* ── Open / close ── */
@@ -634,10 +589,12 @@
   sendBtn.addEventListener('click', sendMessage);
   inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
 
-  /* ── Initial greeting ── */
+  /* ── Initial greeting (static — no API cost) ── */
   setTimeout(() => {
-    botReply("Hey! Welcome to Aneesi Creative. Looking to start a project, or just want to learn more about what we do?");
-    setTimeout(() => buildSugs(SUGS), 1400);
-  }, 1200);
+    const greeting = "Hey! Welcome to Aneesi Creative. I'm here to answer any questions about our services, process, or how to get started. What can I help you with?";
+    addMsg(greeting, 'bot');
+    history.push({ role: 'assistant', content: greeting });
+    setTimeout(() => buildSugs(SUGS), 600);
+  }, 1000);
 
 })();
