@@ -159,8 +159,8 @@
     /* Scroll parallax — shape drifts and fades as page scrolls */
     window.addEventListener('scroll', () => {
       const progress = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      canvas.style.transform = `translateY(calc(-50% + ${progress * 120}px))`;
-      canvas.style.opacity   = Math.max(0.08, 0.55 - progress * 0.45);
+      canvas.style.setProperty('--hero3d-scroll', `${progress * 120}px`);
+      canvas.style.opacity = Math.max(0.08, 0.55 - progress * 0.45);
     }, { passive: true });
 
     /* Resize */
