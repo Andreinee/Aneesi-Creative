@@ -879,7 +879,7 @@
       top: 50vh; right: clamp(-80px, 0vw, 20px);
       width: clamp(200px, 25vw, 373px);
       height: clamp(200px, 25vw, 373px);
-      pointer-events: none; z-index: 0;
+      pointer-events: none; z-index: 2;
       opacity: 0.55;
       transition: opacity .6s ease;
       animation: hero3dFloat 5s ease-in-out infinite;
