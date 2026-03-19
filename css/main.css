@@ -869,6 +869,25 @@
       max-width:540px; margin-top:16px;
     }
 
+    /* ─── 3D GEOMETRIC ELEMENT ─── */
+    .hero3d {
+      position: absolute;
+      top: 50%; right: clamp(-60px, 2vw, 40px);
+      transform: translateY(-50%);
+      width: clamp(260px, 38vw, 540px);
+      height: clamp(260px, 38vw, 540px);
+      pointer-events: none; z-index: 0;
+    }
+    .hero .hero3d {
+      right: 4%; opacity: 0.45;
+      width: clamp(200px, 28vw, 420px);
+      height: clamp(200px, 28vw, 420px);
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      .hero3d { opacity: 0.25; width: 220px; height: 220px; right: -40px; }
+    }
+
     /* ─── CUSTOM CURSOR ─── */
     .cursor-dot,
     .cursor-ring {

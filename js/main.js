@@ -80,6 +80,90 @@
     });
   });
 
+  /* ── Interactive 3D Geometric Element ── */
+  (function () {
+    const canvas = document.querySelector('.hero3d');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const W = () => canvas.clientWidth  || 400;
+    const H = () => canvas.clientHeight || 400;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.setSize(W(), H(), false);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, W() / H(), 0.1, 100);
+    camera.position.z = 6;
+
+    /* Main icosahedron — brand red wireframe */
+    const geo      = new THREE.IcosahedronGeometry(2, 1);
+    const edgeGeo  = new THREE.EdgesGeometry(geo);
+    const wireMat  = new THREE.LineBasicMaterial({ color: 0xE8193C, transparent: true, opacity: 0.88 });
+    const wire     = new THREE.LineSegments(edgeGeo, wireMat);
+    scene.add(wire);
+
+    /* Dark inner face for depth */
+    const fillMat  = new THREE.MeshBasicMaterial({ color: 0x080808, transparent: true, opacity: 0.72, side: THREE.BackSide });
+    const fill     = new THREE.Mesh(geo, fillMat);
+    fill.scale.setScalar(0.97);
+    scene.add(fill);
+
+    /* Outer glow halo */
+    const halogeo  = new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(2.14, 1));
+    const haloMat  = new THREE.LineBasicMaterial({ color: 0xE8193C, transparent: true, opacity: 0.10 });
+    const halo     = new THREE.LineSegments(halogeo, haloMat);
+    scene.add(halo);
+
+    /* Floating particles */
+    const N   = 130;
+    const pos = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      const r     = 2.9 + Math.random() * 2.1;
+      const theta = Math.random() * Math.PI * 2;
+      const phi   = Math.acos(2 * Math.random() - 1);
+      pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+      pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+      pos[i*3+2] = r * Math.cos(phi);
+    }
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const ptMat = new THREE.PointsMaterial({ color: 0xE8193C, size: 0.045, transparent: true, opacity: 0.5 });
+    const pts   = new THREE.Points(ptGeo, ptMat);
+    scene.add(pts);
+
+    /* Mouse tracking */
+    let mx = 0, my = 0;
+    let autoX = 0, autoY = 0;
+    document.addEventListener('mousemove', e => {
+      mx =  (e.clientX / window.innerWidth  - 0.5) * 2;
+      my = -(e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    /* Animation loop */
+    renderer.setAnimationLoop(() => {
+      autoX += 0.0028;
+      autoY += 0.0046;
+      const tX = autoX + my * 0.38;
+      const tY = autoY + mx * 0.38;
+      wire.rotation.x  += (tX - wire.rotation.x)  * 0.045;
+      wire.rotation.y  += (tY - wire.rotation.y)   * 0.045;
+      fill.rotation.copy(wire.rotation);
+      halo.rotation.copy(wire.rotation);
+      pts.rotation.x    = wire.rotation.x * 0.22;
+      pts.rotation.y    = wire.rotation.y * 0.22;
+      renderer.render(scene, camera);
+    });
+
+    /* Resize */
+    window.addEventListener('resize', () => {
+      renderer.setSize(W(), H(), false);
+      camera.aspect = W() / H();
+      camera.updateProjectionMatrix();
+    }, { passive: true });
+  })();
+
   /* ── Cybernetic Grid Shader (hero background) ── */
   (function () {
     const container = document.getElementById('hero-shader');
