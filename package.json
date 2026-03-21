@@ -11,8 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@vercel/analytics": "^2.0.1",
-    "puppeteer": "^24.38.0"
+    "@anthropic-ai/sdk": "^0.39.0"
   }
 }
