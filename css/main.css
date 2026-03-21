@@ -871,21 +871,21 @@
 
     /* ─── 3D GEOMETRIC ELEMENT ─── */
     @keyframes hero3dFloat {
-      0%,100% { transform: translateY(calc(-50% + var(--hero3d-scroll, 0px))); }
-      50%      { transform: translateY(calc(-50% + var(--hero3d-scroll, 0px) - 18px)); }
+      0%,100% { transform: translate(-50%, calc(-50% + var(--hero3d-scroll, 0px))); }
+      50%      { transform: translate(-50%, calc(-50% + var(--hero3d-scroll, 0px) - 18px)); }
     }
     .hero3d {
       position: fixed;
-      top: 50vh; right: clamp(-80px, 0vw, 20px);
+      top: 50vh; left: 50%;
       width: clamp(133px, 17vw, 249px);
       height: clamp(133px, 17vw, 249px);
-      pointer-events: none; z-index: 3;
+      pointer-events: none; z-index: 0;
       opacity: 0.55;
       transition: opacity .6s ease;
       animation: hero3dFloat 5s ease-in-out infinite;
     }
     @media (max-width: 768px) {
-      .hero3d { opacity: 0.18; width: 98px; height: 98px; right: -30px; }
+      .hero3d { opacity: 0.18; width: 98px; height: 98px; }
     }
 
     /* ─── CHATBOT ─── */
