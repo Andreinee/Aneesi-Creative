@@ -446,7 +446,7 @@
       display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:48px;
       padding-bottom:56px; border-bottom:1px solid var(--glass-bd); margin-bottom:28px;
     }
-    .footer__logo { height:30px; width:auto; margin-bottom:18px; }
+    .footer__logo { height:60px; width:auto; margin-bottom:18px; }
     .footer__tag  { font-family:'Syne',sans-serif; font-size:clamp(16px,1.5vw,18px); font-weight:800; color:#fff; margin-bottom:10px; }
     .footer__desc { font-size:.875rem; line-height:1.72; color:var(--muted); max-width:270px; margin-bottom:22px; }
     .footer__soc  { display:flex; gap:10px; }
