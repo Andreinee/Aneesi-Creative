@@ -446,16 +446,22 @@
       display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:48px;
       padding-bottom:56px; border-bottom:1px solid var(--glass-bd); margin-bottom:28px;
     }
-    .footer__logo { height:70px; width:auto; margin-bottom:18px; }
+    .footer__logo { height:100px; width:auto; margin-bottom:18px; }
     .footer__tag  { font-family:'Syne',sans-serif; font-size:clamp(16px,1.5vw,18px); font-weight:800; color:#fff; margin-bottom:10px; }
     .footer__desc { font-size:.875rem; line-height:1.72; color:var(--muted); max-width:270px; margin-bottom:22px; }
     .footer__soc  { display:flex; gap:10px; }
     .footer__sl   {
       width:34px; height:34px; border-radius:50%; background:var(--glass); border:1px solid var(--glass-bd);
-      display:flex; align-items:center; justify-content:center; color:var(--muted);
-      transition:all .25s;
+      display:flex; align-items:center; justify-content:center;
+      color:transparent; opacity:0.4;
+      transition:all .3s ease;
     }
-    .footer__sl:hover { background:var(--red); border-color:var(--red); color:#fff; transform:translateY(-2px); }
+    .footer__sl:hover {
+      background:var(--red); border-color:var(--red);
+      color:#fff; opacity:1;
+      transform:translateY(-2px) scale(1.12);
+      box-shadow:0 6px 20px rgba(232,25,60,.35);
+    }
     .footer__col-h { font-family:'Syne',sans-serif; font-size:clamp(14px,1.2vw,16px); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#fff; margin-bottom:18px; }
     .footer__col-l { display:flex; flex-direction:column; gap:11px; }
     .footer__col-l a { font-size:.875rem; color:var(--muted); transition:color .2s; }
