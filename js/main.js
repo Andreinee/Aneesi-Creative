@@ -1,6 +1,50 @@
   /* ── Icons ── */
   lucide.createIcons();
 
+  /* ── Contact form ── */
+  const contactForm = document.querySelector('.contact-sec__form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn  = contactForm.querySelector('button[type="submit"]');
+      const name = document.getElementById('cf-name').value.trim();
+      const email = document.getElementById('cf-email').value.trim();
+      const phone = document.getElementById('cf-phone').value.trim();
+      const message = document.getElementById('cf-message').value.trim();
+
+      if (!name || !email || !message) {
+        btn.textContent = 'Please fill required fields';
+        btn.style.background = '#555';
+        setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = ''; }, 3000);
+        return;
+      }
+
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, message }),
+        });
+        if (res.ok) {
+          btn.textContent = 'Message Sent ✓';
+          btn.style.background = '#16a34a';
+          contactForm.reset();
+        } else {
+          throw new Error();
+        }
+      } catch {
+        btn.textContent = 'Failed — try emailing us directly';
+        btn.style.background = '#555';
+      } finally {
+        btn.disabled = false;
+        setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = ''; }, 5000);
+      }
+    });
+  }
+
   /* ── Work filters ── */
   document.querySelectorAll('.wf-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -542,14 +586,14 @@
       const data = await res.json();
 
       if (!res.ok || data.error) {
-        const errMsg = data.error || 'Something went wrong. Try emailing hello@aneesicreative.com';
+        const errMsg = data.error || 'Something went wrong. Try emailing aneesicreative@gmail.com';
         addMsg(errMsg, 'bot');
       } else {
         addMsg(data.reply, 'bot');
         history.push({ role: 'assistant', content: data.reply });
       }
     } catch (_) {
-      addMsg("Connection issue — please email us directly at hello@aneesicreative.com", 'bot');
+      addMsg("Connection issue — please email us directly at aneesicreative@gmail.com", 'bot');
     }
 
     isBusy = false;
